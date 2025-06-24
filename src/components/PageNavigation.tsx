@@ -182,6 +182,8 @@ export default function PageNavigation({
 		const newPages = [...pages];
 		newPages.splice(index + 1, 0, newPage);
 		setPages(newPages);
+
+		onPageSelect(newPage.id);
 	};
 
 	// Function to render the SVG icons inline
@@ -282,25 +284,16 @@ export default function PageNavigation({
 											</div>
 										</div>
 
-										<div className="relative px-1">
+										<div className="relative px-1 mx-1 ml-[8px] flex items-center justify-center">
 											<button
-												className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 w-6 h-6 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500"
+												className="opacity-0 hover:opacity-100 transition-opacity duration-200 w-4 h-4 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500"
 												onClick={() => handleAddPage(index)}
 											>
-												<svg
-													className="w-4 h-4"
-													fill="none"
-													stroke="currentColor"
-													strokeWidth="2"
-													viewBox="0 0 24 24"
-													xmlns="http://www.w3.org/2000/svg"
-												>
-													<path
-														strokeLinecap="round"
-														strokeLinejoin="round"
-														d="M12 4.5v15m7.5-7.5h-15"
-													></path>
-												</svg>
+												<img
+													src="/icons/plus-large.svg"
+													alt="Add page"
+													className="w-3 h-3"
+												/>
 											</button>
 										</div>
 
@@ -320,9 +313,14 @@ export default function PageNavigation({
 
 						<div className="ml-4">
 							<button
-								className="px-3 py-1.5 rounded-md bg-blue-50 text-[#F59D0E] hover:bg-blue-100 transition-colors text-[14px] font-medium"
+								className="px-3 py-1.5 rounded-md bg-blue-50 text-[#F59D0E] hover:bg-blue-100 transition-colors text-[14px] font-medium flex items-center gap-1"
 								onClick={() => handleAddPage(pages.length - 1)}
 							>
+								<img
+									src="/icons/add-icon.svg"
+									alt=""
+									className="w-4 h-4 text-[#F59D0E]"
+								/>
 								Add Page
 							</button>
 						</div>
