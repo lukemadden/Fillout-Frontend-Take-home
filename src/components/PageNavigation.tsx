@@ -32,11 +32,29 @@ const ContextMenu = ({
 		<>
 			<div className="fixed inset-0 z-40" onClick={onClose} />
 			<div
-				className="fixed z-50 bg-white rounded-md shadow-lg py-1 w-40 text-sm"
+				className="fixed z-50 bg-white rounded-md shadow-lg py-2 w-[240px] text-sm"
 				style={{ left: `${x}px`, top: `${y}px` }}
 			>
+				<div className="px-4 py-1">
+					<h3 className="text-[16px] font-medium text-[#1A1A1A] w-[62px] h-[24px]">
+						Settings
+					</h3>
+				</div>
+
+				<div className="border-t border-gray-200 mb-1"></div>
+
 				<button
-					className="w-full text-left px-4 py-2 hover:bg-gray-100"
+					className="w-full text-left px-4 py-2 hover:bg-gray-100 text-[#1A1A1A]"
+					onClick={() => {
+						// Set as first page functionality
+						onClose();
+					}}
+				>
+					Set as first page
+				</button>
+
+				<button
+					className="w-full text-left px-4 py-2 hover:bg-gray-100 text-[#1A1A1A]"
 					onClick={() => {
 						onRename(page);
 						onClose();
@@ -44,8 +62,19 @@ const ContextMenu = ({
 				>
 					Rename
 				</button>
+
 				<button
-					className="w-full text-left px-4 py-2 hover:bg-gray-100"
+					className="w-full text-left px-4 py-2 hover:bg-gray-100 text-[#1A1A1A]"
+					onClick={() => {
+						// Copy functionality
+						onClose();
+					}}
+				>
+					Copy
+				</button>
+
+				<button
+					className="w-full text-left px-4 py-2 hover:bg-gray-100 text-[#1A1A1A]"
 					onClick={() => {
 						onDuplicate(page);
 						onClose();
@@ -53,8 +82,11 @@ const ContextMenu = ({
 				>
 					Duplicate
 				</button>
+
+				<div className="my-1 border-t border-gray-200"></div>
+
 				<button
-					className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100"
+					className="w-full text-left px-4 py-2 text-[#EF494F] hover:bg-gray-100"
 					onClick={() => {
 						onDelete(page);
 						onClose();
@@ -281,6 +313,19 @@ export default function PageNavigation({
 											<div className="flex flex-row items-center">
 												{renderIcon(page.icon, activePageId === page.id)}
 												<span>{page.title}</span>
+
+												{/* Show dot-menu icon only when the page is selected */}
+												{activePageId === page.id && (
+													<img
+														src="/icons/dot-menu.svg"
+														alt="Menu"
+														className="w-4 h-4 ml-2 opacity-60"
+														onClick={(e) => {
+															e.stopPropagation();
+															handleContextMenu(e, page.id);
+														}}
+													/>
+												)}
 											</div>
 										</div>
 
