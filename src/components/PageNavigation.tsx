@@ -183,77 +183,79 @@ export default function PageNavigation({
 	};
 
 	return (
-		<div className="w-full bg-white shadow-sm border-b border-gray-200">
-			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-				<div className="flex items-center h-16">
-					<div className="flex-grow overflow-x-auto hide-scrollbar">
-						<div className="flex space-x-1">
-							{pages.map((page, index) => (
-								<div key={page.id} className="flex items-center">
-									<div
-										className={`group relative px-4 py-2 rounded-md cursor-pointer select-none
+		<div className="w-full bg-[#444444] p-[50px]">
+			<div className="w-full bg-[#f9fafb] shadow-sm border-b border-gray-200 rounded-md">
+				<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+					<div className="flex items-center h-16">
+						<div className="flex-grow overflow-x-auto hide-scrollbar">
+							<div className="flex space-x-1">
+								{pages.map((page, index) => (
+									<div key={page.id} className="flex items-center">
+										<div
+											className={`group relative px-4 py-2 rounded-md cursor-pointer select-none
                     ${
 											activePageId === page.id
 												? "bg-blue-50 text-blue-600"
 												: "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
 										}`}
-										onClick={() => onPageSelect(page.id)}
-										onContextMenu={(e) => handleContextMenu(e, page.id)}
-										draggable
-										onDragStart={(e) => handleDragStart(e, page.id)}
-										onDragOver={(e) => handleDragOver(e, index)}
-										onDrop={() => handleDrop(index)}
-										onDragEnd={handleDragEnd}
-									>
-										<span
-											className={`${
-												draggedPageId === page.id ? "opacity-50" : ""
-											}`}
+											onClick={() => onPageSelect(page.id)}
+											onContextMenu={(e) => handleContextMenu(e, page.id)}
+											draggable
+											onDragStart={(e) => handleDragStart(e, page.id)}
+											onDragOver={(e) => handleDragOver(e, index)}
+											onDrop={() => handleDrop(index)}
+											onDragEnd={handleDragEnd}
 										>
-											{page.title}
-										</span>
-									</div>
-
-									{/* Add page button */}
-									<div className="relative px-1">
-										<button
-											className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 w-6 h-6 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500"
-											onClick={() => handleAddPage(index)}
-										>
-											<svg
-												xmlns="http://www.w3.org/2000/svg"
-												fill="none"
-												viewBox="0 0 24 24"
-												stroke="currentColor"
-												className="w-4 h-4"
+											<span
+												className={`${
+													draggedPageId === page.id ? "opacity-50" : ""
+												}`}
 											>
-												<path
-													strokeLinecap="round"
-													strokeLinejoin="round"
-													strokeWidth={2}
-													d="M12 4v16m8-8H4"
-												/>
-											</svg>
-										</button>
+												{page.title}
+											</span>
+										</div>
+
+										{/* Add page button */}
+										<div className="relative px-1">
+											<button
+												className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 w-6 h-6 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500"
+												onClick={() => handleAddPage(index)}
+											>
+												<svg
+													xmlns="http://www.w3.org/2000/svg"
+													fill="none"
+													viewBox="0 0 24 24"
+													stroke="currentColor"
+													className="w-4 h-4"
+												>
+													<path
+														strokeLinecap="round"
+														strokeLinejoin="round"
+														strokeWidth={2}
+														d="M12 4v16m8-8H4"
+													/>
+												</svg>
+											</button>
+										</div>
+
+										{/* Indicator for drag target */}
+										{hoverIndex === index && draggedPageId !== page.id && (
+											<div className="absolute h-full w-1 bg-blue-500 left-0 top-0"></div>
+										)}
 									</div>
-
-									{/* Indicator for drag target */}
-									{hoverIndex === index && draggedPageId !== page.id && (
-										<div className="absolute h-full w-1 bg-blue-500 left-0 top-0"></div>
-									)}
-								</div>
-							))}
+								))}
+							</div>
 						</div>
-					</div>
 
-					{/* Add page button at the end */}
-					<div className="ml-4">
-						<button
-							className="px-3 py-1.5 rounded-md bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors text-sm font-medium"
-							onClick={() => handleAddPage(pages.length - 1)}
-						>
-							Add Page
-						</button>
+						{/* Add page button at the end */}
+						<div className="ml-4">
+							<button
+								className="px-3 py-1.5 rounded-md bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors text-sm font-medium"
+								onClick={() => handleAddPage(pages.length - 1)}
+							>
+								Add Page
+							</button>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -273,4 +275,3 @@ export default function PageNavigation({
 		</div>
 	);
 }
-
