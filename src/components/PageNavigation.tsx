@@ -6,6 +6,7 @@ import { createPortal } from "react-dom";
 interface Page {
 	id: string;
 	title: string;
+	icon?: string; // Optional icon path
 }
 
 interface ContextMenuProps {
@@ -77,10 +78,10 @@ export default function PageNavigation({
 	onPageSelect,
 }: PageNavigationProps) {
 	const [pages, setPages] = useState<Page[]>([
-		{ id: "1", title: "Info" },
-		{ id: "2", title: "Details" },
-		{ id: "3", title: "Other" },
-		{ id: "4", title: "Ending" },
+		{ id: "1", title: "Info", icon: "/icons/circle-info.png" },
+		{ id: "2", title: "Details", icon: "/icons/file-text.png" },
+		{ id: "3", title: "Other", icon: "/icons/file-text.png" },
+		{ id: "4", title: "Ending", icon: "/icons/circle-check.png" },
 	]);
 
 	const [contextMenu, setContextMenu] = useState<{
@@ -88,46 +89,56 @@ export default function PageNavigation({
 		y: number;
 		pageId: string;
 	} | null>(null);
-	const [draggedPageId, setDraggedPageId] = useState<string | null>(null);
-	const [hoverIndex, setHoverIndex] = useState<number | null>(null);
 
-	// Drag and drop functionality
-	const handleDragStart = (e: React.DragEvent, pageId: string) => {
-		setDraggedPageId(pageId);
-		// Make the drag image transparent
-		const dragImage = document.createElement("div");
-		dragImage.style.width = "0";
-		dragImage.style.height = "0";
-		document.body.appendChild(dragImage);
-		e.dataTransfer.setDragImage(dragImage, 0, 0);
-		e.dataTransfer.effectAllowed = "move";
+	const [draggedItem, setDraggedItem] = useState<number | null>(null);
+	const [dragOverItem, setDragOverItem] = useState<number | null>(null);
+
+	// Simplified drag and drop handlers
+	const handleDragStart = (e: React.DragEvent, position: number) => {
+		setDraggedItem(position);
 	};
 
-	const handleDragOver = (e: React.DragEvent, targetIndex: number) => {
+	const handleDragOver = (e: React.DragEvent, position: number) => {
 		e.preventDefault();
-		if (draggedPageId) {
-			setHoverIndex(targetIndex);
-		}
+		setDragOverItem(position);
 	};
 
-	const handleDrop = (targetIndex: number) => {
-		if (!draggedPageId) return;
+	const handleDrop = (e: React.DragEvent) => {
+		e.preventDefault();
+		e.stopPropagation();
 
-		const draggedIndex = pages.findIndex((page) => page.id === draggedPageId);
-		if (draggedIndex === -1) return;
+		if (draggedItem === null || dragOverItem === null) return;
+		if (draggedItem === dragOverItem) return;
 
+		// Create a copy of the pages array
 		const newPages = [...pages];
-		const [removedPage] = newPages.splice(draggedIndex, 1);
-		newPages.splice(targetIndex, 0, removedPage);
+		// Remove the dragged item
+		const draggedItemContent = newPages.splice(draggedItem, 1)[0];
+		// Add it at the new position
+		newPages.splice(dragOverItem, 0, draggedItemContent);
 
+		// Update the state with the new array
 		setPages(newPages);
-		setDraggedPageId(null);
-		setHoverIndex(null);
+		setDraggedItem(null);
+		setDragOverItem(null);
 	};
 
-	const handleDragEnd = () => {
-		setDraggedPageId(null);
-		setHoverIndex(null);
+	const handleDragEnd = (e: React.DragEvent) => {
+		// If we have both draggedItem and dragOverItem, and the drop event didn't fire
+		// we'll handle the reordering here as a fallback
+		if (
+			draggedItem !== null &&
+			dragOverItem !== null &&
+			draggedItem !== dragOverItem
+		) {
+			const newPages = [...pages];
+			const draggedItemContent = newPages.splice(draggedItem, 1)[0];
+			newPages.splice(dragOverItem, 0, draggedItemContent);
+			setPages(newPages);
+		}
+
+		setDraggedItem(null);
+		setDragOverItem(null);
 	};
 
 	// Context menu functionality
@@ -150,6 +161,7 @@ export default function PageNavigation({
 		const newPage = {
 			id: Date.now().toString(),
 			title: `${page.title} (Copy)`,
+			icon: page.icon, // Duplicate the icon as well
 		};
 
 		const newPages = [...pages];
@@ -175,6 +187,7 @@ export default function PageNavigation({
 		const newPage = {
 			id: Date.now().toString(),
 			title: `New Page`,
+			icon: "/icons/file-text.png", // Default icon for new pages
 		};
 
 		const newPages = [...pages];
@@ -185,34 +198,43 @@ export default function PageNavigation({
 	return (
 		<div className="w-full bg-[#444444] p-[50px]">
 			<div className="w-full bg-[#f9fafb] shadow-sm border-b border-gray-200 rounded-md">
-				<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-					<div className="flex items-center h-16">
+				<div className="max-w-7xl pl-[20px] pr-[20px] py-[20px]">
+					<div className="flex items-center">
 						<div className="flex-grow overflow-x-auto hide-scrollbar">
-							<div className="flex space-x-1">
+							<div
+								className="flex space-x-1"
+								onDragOver={(e) => e.preventDefault()}
+							>
 								{pages.map((page, index) => (
-									<div key={page.id} className="flex items-center">
+									<div
+										key={page.id}
+										className="flex items-center relative"
+										onDragOver={(e) => handleDragOver(e, index)}
+										onDrop={(e) => handleDrop(e)}
+									>
 										<div
-											className={`group relative px-4 py-2 rounded-md cursor-pointer select-none
+											className={`group relative h-[32px] w-auto px-3 flex items-center justify-center rounded-md cursor-pointer select-none text-[14px] font-medium text-[#1A1A1A]
                     ${
 											activePageId === page.id
 												? "bg-blue-50 text-blue-600"
-												: "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
-										}`}
+												: "hover:text-gray-700 hover:bg-gray-50"
+										} ${draggedItem === index ? "opacity-50" : ""}`}
 											onClick={() => onPageSelect(page.id)}
 											onContextMenu={(e) => handleContextMenu(e, page.id)}
-											draggable
-											onDragStart={(e) => handleDragStart(e, page.id)}
-											onDragOver={(e) => handleDragOver(e, index)}
-											onDrop={() => handleDrop(index)}
-											onDragEnd={handleDragEnd}
+											draggable="true"
+											onDragStart={(e) => handleDragStart(e, index)}
+											onDragEnd={(e) => handleDragEnd(e)}
 										>
-											<span
-												className={`${
-													draggedPageId === page.id ? "opacity-50" : ""
-												}`}
-											>
-												{page.title}
-											</span>
+											<div className="flex flex-row items-center">
+												{page.icon && (
+													<img
+														src={page.icon}
+														alt="icon"
+														className="w-5 h-5 mr-[6px]"
+													/>
+												)}
+												<span>{page.title}</span>
+											</div>
 										</div>
 
 										{/* Add page button */}
@@ -238,9 +260,15 @@ export default function PageNavigation({
 											</button>
 										</div>
 
-										{/* Indicator for drag target */}
-										{hoverIndex === index && draggedPageId !== page.id && (
-											<div className="absolute h-full w-1 bg-blue-500 left-0 top-0"></div>
+										{/* Visual indicator for drag target */}
+										{dragOverItem === index && draggedItem !== index && (
+											<div
+												className="absolute h-[32px] w-1 bg-blue-500 left-0"
+												style={{
+													left: dragOverItem > draggedItem! ? "100%" : "0",
+													transform: "translateX(-50%)",
+												}}
+											/>
 										)}
 									</div>
 								))}
@@ -250,7 +278,7 @@ export default function PageNavigation({
 						{/* Add page button at the end */}
 						<div className="ml-4">
 							<button
-								className="px-3 py-1.5 rounded-md bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors text-sm font-medium"
+								className="px-3 py-1.5 rounded-md bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors text-[14px] font-medium"
 								onClick={() => handleAddPage(pages.length - 1)}
 							>
 								Add Page
