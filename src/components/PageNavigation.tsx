@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { createPortal } from "react-dom";
 
 interface Page {
 	id: string;
 	title: string;
-	icon?: string; // Optional icon path
+	icon: string;
 }
 
 interface ContextMenuProps {
@@ -78,10 +78,10 @@ export default function PageNavigation({
 	onPageSelect,
 }: PageNavigationProps) {
 	const [pages, setPages] = useState<Page[]>([
-		{ id: "1", title: "Info", icon: "/icons/circle-info.png" },
-		{ id: "2", title: "Details", icon: "/icons/file-text.png" },
-		{ id: "3", title: "Other", icon: "/icons/file-text.png" },
-		{ id: "4", title: "Ending", icon: "/icons/circle-check.png" },
+		{ id: "1", title: "Info", icon: "/icons/circle-info.svg" },
+		{ id: "2", title: "Details", icon: "/icons/file-text.svg" },
+		{ id: "3", title: "Other", icon: "/icons/file-text.svg" },
+		{ id: "4", title: "Ending", icon: "/icons/circle-check.svg" },
 	]);
 
 	const [contextMenu, setContextMenu] = useState<{
@@ -93,7 +93,6 @@ export default function PageNavigation({
 	const [draggedItem, setDraggedItem] = useState<number | null>(null);
 	const [dragOverItem, setDragOverItem] = useState<number | null>(null);
 
-	// Simplified drag and drop handlers
 	const handleDragStart = (e: React.DragEvent, position: number) => {
 		setDraggedItem(position);
 	};
@@ -110,22 +109,16 @@ export default function PageNavigation({
 		if (draggedItem === null || dragOverItem === null) return;
 		if (draggedItem === dragOverItem) return;
 
-		// Create a copy of the pages array
 		const newPages = [...pages];
-		// Remove the dragged item
 		const draggedItemContent = newPages.splice(draggedItem, 1)[0];
-		// Add it at the new position
 		newPages.splice(dragOverItem, 0, draggedItemContent);
 
-		// Update the state with the new array
 		setPages(newPages);
 		setDraggedItem(null);
 		setDragOverItem(null);
 	};
 
 	const handleDragEnd = (e: React.DragEvent) => {
-		// If we have both draggedItem and dragOverItem, and the drop event didn't fire
-		// we'll handle the reordering here as a fallback
 		if (
 			draggedItem !== null &&
 			dragOverItem !== null &&
@@ -141,7 +134,6 @@ export default function PageNavigation({
 		setDragOverItem(null);
 	};
 
-	// Context menu functionality
 	const handleContextMenu = (e: React.MouseEvent, pageId: string) => {
 		e.preventDefault();
 		setContextMenu({ x: e.clientX, y: e.clientY, pageId });
@@ -152,7 +144,6 @@ export default function PageNavigation({
 	};
 
 	const handleRename = (page: Page) => {
-		// This would typically open a modal for renaming
 		console.log(`Rename page: ${page.title}`);
 	};
 
@@ -161,7 +152,7 @@ export default function PageNavigation({
 		const newPage = {
 			id: Date.now().toString(),
 			title: `${page.title} (Copy)`,
-			icon: page.icon, // Duplicate the icon as well
+			icon: page.icon,
 		};
 
 		const newPages = [...pages];
@@ -170,11 +161,10 @@ export default function PageNavigation({
 	};
 
 	const handleDelete = (page: Page) => {
-		if (pages.length <= 1) return; // Don't delete the last page
+		if (pages.length <= 1) return;
 
 		setPages(pages.filter((p) => p.id !== page.id));
 
-		// If the active page is deleted, select the first page
 		if (activePageId === page.id) {
 			const newActivePageId =
 				pages[0].id === page.id ? pages[1].id : pages[0].id;
@@ -182,17 +172,78 @@ export default function PageNavigation({
 		}
 	};
 
-	// Add new page functionality
 	const handleAddPage = (index: number) => {
 		const newPage = {
 			id: Date.now().toString(),
 			title: `New Page`,
-			icon: "/icons/file-text.png", // Default icon for new pages
+			icon: "/icons/file-text.svg",
 		};
 
 		const newPages = [...pages];
 		newPages.splice(index + 1, 0, newPage);
 		setPages(newPages);
+	};
+
+	// Function to render the SVG icons inline
+	const renderIcon = (iconType: string, isActive: boolean) => {
+		const iconColor = isActive ? "#F59D0E" : "#8C93A1"; // Orange color when active
+
+		switch (iconType) {
+			case "/icons/circle-info.svg":
+				return (
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke={iconColor}
+						strokeWidth="1.5"
+						strokeLinecap="round"
+						strokeLinejoin="round"
+						className="w-5 h-5 mr-[6px]"
+					>
+						<circle cx="12" cy="12" r="10" />
+						<line x1="12" y1="16" x2="12" y2="12" />
+						<line x1="12" y1="8" x2="12.01" y2="8" />
+					</svg>
+				);
+			case "/icons/file-text.svg":
+				return (
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke={iconColor}
+						strokeWidth="1.5"
+						strokeLinecap="round"
+						strokeLinejoin="round"
+						className="w-5 h-5 mr-[6px]"
+					>
+						<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+						<polyline points="14 2 14 8 20 8" />
+						<line x1="16" y1="13" x2="8" y2="13" />
+						<line x1="16" y1="17" x2="8" y2="17" />
+						<polyline points="10 9 9 9 8 9" />
+					</svg>
+				);
+			case "/icons/circle-check.svg":
+				return (
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke={iconColor}
+						strokeWidth="1.5"
+						strokeLinecap="round"
+						strokeLinejoin="round"
+						className="w-5 h-5 mr-[6px]"
+					>
+						<circle cx="12" cy="12" r="10" />
+						<path d="M9 12l2 2 4-4" />
+					</svg>
+				);
+			default:
+				return null;
+		}
 	};
 
 	return (
@@ -213,12 +264,12 @@ export default function PageNavigation({
 										onDrop={(e) => handleDrop(e)}
 									>
 										<div
-											className={`group relative h-[32px] w-auto px-3 flex items-center justify-center rounded-md cursor-pointer select-none text-[14px] font-medium text-[#1A1A1A]
-                    ${
-											activePageId === page.id
-												? "bg-blue-50 text-blue-600"
-												: "hover:text-gray-700 hover:bg-gray-50"
-										} ${draggedItem === index ? "opacity-50" : ""}`}
+											className={`group relative h-[32px] w-auto px-3 flex items-center justify-center rounded-md cursor-pointer select-none text-[14px] font-medium
+                      ${
+												activePageId === page.id
+													? "bg-blue-50 text-[#1A1A1A] border border-[#2F72E2]"
+													: "bg-[#9DA4B2] bg-opacity-15 text-[#677289] hover:bg-opacity-35 border border-transparent"
+											} ${draggedItem === index ? "opacity-50" : ""}`}
 											onClick={() => onPageSelect(page.id)}
 											onContextMenu={(e) => handleContextMenu(e, page.id)}
 											draggable="true"
@@ -226,41 +277,33 @@ export default function PageNavigation({
 											onDragEnd={(e) => handleDragEnd(e)}
 										>
 											<div className="flex flex-row items-center">
-												{page.icon && (
-													<img
-														src={page.icon}
-														alt="icon"
-														className="w-5 h-5 mr-[6px]"
-													/>
-												)}
+												{renderIcon(page.icon, activePageId === page.id)}
 												<span>{page.title}</span>
 											</div>
 										</div>
 
-										{/* Add page button */}
 										<div className="relative px-1">
 											<button
 												className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 w-6 h-6 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500"
 												onClick={() => handleAddPage(index)}
 											>
 												<svg
-													xmlns="http://www.w3.org/2000/svg"
-													fill="none"
-													viewBox="0 0 24 24"
-													stroke="currentColor"
 													className="w-4 h-4"
+													fill="none"
+													stroke="currentColor"
+													strokeWidth="2"
+													viewBox="0 0 24 24"
+													xmlns="http://www.w3.org/2000/svg"
 												>
 													<path
 														strokeLinecap="round"
 														strokeLinejoin="round"
-														strokeWidth={2}
-														d="M12 4v16m8-8H4"
-													/>
+														d="M12 4.5v15m7.5-7.5h-15"
+													></path>
 												</svg>
 											</button>
 										</div>
 
-										{/* Visual indicator for drag target */}
 										{dragOverItem === index && draggedItem !== index && (
 											<div
 												className="absolute h-[32px] w-1 bg-blue-500 left-0"
@@ -275,10 +318,9 @@ export default function PageNavigation({
 							</div>
 						</div>
 
-						{/* Add page button at the end */}
 						<div className="ml-4">
 							<button
-								className="px-3 py-1.5 rounded-md bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors text-[14px] font-medium"
+								className="px-3 py-1.5 rounded-md bg-blue-50 text-[#F59D0E] hover:bg-blue-100 transition-colors text-[14px] font-medium"
 								onClick={() => handleAddPage(pages.length - 1)}
 							>
 								Add Page
@@ -288,7 +330,6 @@ export default function PageNavigation({
 				</div>
 			</div>
 
-			{/* Context menu */}
 			{contextMenu && (
 				<ContextMenu
 					x={contextMenu.x}
