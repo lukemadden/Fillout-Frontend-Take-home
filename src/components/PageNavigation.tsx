@@ -33,7 +33,7 @@ const ContextMenu = ({
 		<>
 			<div className="fixed inset-0 z-40" onClick={onClose} />
 			<div
-				className="fixed z-50 bg-white rounded-lg shadow-lg py-2 w-[240px] text-sm"
+				className="fixed z-50 bg-white rounded-xl shadow-lg py-2 w-[240px] text-sm"
 				style={{ left: `${x}px`, top: `${y}px` }}
 			>
 				<div className="px-4 py-1">
@@ -271,18 +271,18 @@ export default function PageNavigation({
 
 	return (
 		<section className="w-full bg-[#444444] p-[50px]">
-			<div className="w-full bg-[#f9fafb] shadow-sm border-b border-gray-200 rounded-md">
+			<div className="w-full bg-[#f9fafb] shadow-sm border-b border-gray-200">
 				<div className="max-w-7xl pl-[20px] pr-[20px] py-[20px]">
 					<div className="flex items-center">
-						<div className="flex-grow overflow-x-auto hide-scrollbar">
+						<div className="flex-grow overflow-x-auto overflow-y-auto hide-scrollbar">
 							<div
-								className="flex space-x-1"
+								className="flex flex-wrap gap-x-2 gap-y-5"
 								onDragOver={(e) => e.preventDefault()}
 							>
 								{pages.map((page, index) => (
 									<div
 										key={page.id}
-										className="flex items-center relative"
+										className="flex items-center"
 										onDragOver={(e) => handleDragOver(e, index)}
 										onDrop={(e) => handleDrop(e)}
 									>
@@ -390,7 +390,7 @@ export default function PageNavigation({
 												)}
 											</div>
 										</div>
-										<div className="relative mx-1 ml-[8px] flex items-center justify-center">
+										<div className="ml-[8px] flex items-center justify-center">
 											<button
 												className="opacity-0 hover:opacity-100 transition-opacity duration-200 w-4 h-4 flex items-center justify-center rounded-full text-gray-500"
 												onClick={() => handleAddPage(index)}
@@ -399,6 +399,9 @@ export default function PageNavigation({
 													src="/icons/plus-large.svg"
 													alt="Add page"
 													className="w-3 h-3"
+													style={{
+														filter: "brightness(0) saturate(100%)",
+													}}
 												/>
 											</button>
 										</div>
@@ -419,7 +422,7 @@ export default function PageNavigation({
 								))}
 
 								<div
-									className="ml-[3px]"
+									className="flex items-center"
 									onDragOver={(e) => {
 										e.preventDefault();
 										setDragOverItem(pages.length);
