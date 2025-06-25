@@ -29,12 +29,37 @@ const ContextMenu = ({
 	onDelete,
 	onClose,
 }: ContextMenuProps) => {
+	// Add a state to track window width for responsive positioning
+	const [windowWidth, setWindowWidth] = useState(
+		typeof window !== "undefined" ? window.innerWidth : 0
+	);
+
+	// Track window resizing
+	useEffect(() => {
+		const handleResize = () => {
+			setWindowWidth(window.innerWidth);
+		};
+
+		window.addEventListener("resize", handleResize);
+		return () => window.removeEventListener("resize", handleResize);
+	}, []);
+
+	// Determine if we're on mobile (screen width < 640px)
+	const isMobile = windowWidth < 640;
+
+	// Calculate position based on screen size
+	const menuPosition = {
+		left: isMobile ? "auto" : `${x}px`,
+		right: isMobile ? "20px" : "auto",
+		top: `${y}px`,
+	};
+
 	return createPortal(
 		<>
 			<div className="fixed inset-0 z-40" onClick={onClose} />
 			<div
 				className="fixed z-50 bg-white rounded-xl shadow-lg py-2 w-[240px] text-sm"
-				style={{ left: `${x}px`, top: `${y}px` }}
+				style={menuPosition}
 			>
 				<div className="px-4 py-1">
 					<h3 className="text-[16px] font-medium text-[#1A1A1A] w-[62px] h-[24px]">
@@ -210,7 +235,11 @@ export default function PageNavigation({
 
 	const handleContextMenu = (e: React.MouseEvent, pageId: string) => {
 		e.preventDefault();
-		setContextMenu({ x: e.clientX, y: e.clientY, pageId });
+		setContextMenu({
+			x: e.clientX,
+			y: e.clientY,
+			pageId,
+		});
 	};
 
 	const closeContextMenu = () => {
@@ -270,25 +299,25 @@ export default function PageNavigation({
 	}, []);
 
 	return (
-		<section className="w-full bg-[#444444] p-[50px]">
+		<section className="w-full bg-[#444444] p-4 sm:p-[50px]">
 			<div className="w-full bg-[#f9fafb] shadow-sm border-b border-gray-200">
-				<div className="max-w-7xl pl-[20px] pr-[20px] py-[20px]">
-					<div className="flex items-center">
+				<div className="max-w-7xl px-3 py-4 sm:pl-[20px] sm:pr-[20px] sm:py-[20px]">
+					<div className="flex items-start sm:items-center">
 						<div className="flex-grow overflow-x-auto overflow-y-auto hide-scrollbar">
 							<div
-								className="flex flex-wrap gap-x-2 gap-y-5"
+								className="flex flex-col sm:flex-row sm:flex-wrap gap-2 sm:gap-x-2 sm:gap-y-5"
 								onDragOver={(e) => e.preventDefault()}
 							>
 								{pages.map((page, index) => (
 									<div
 										key={page.id}
-										className="flex items-center"
+										className="flex items-center w-full sm:w-auto relative"
 										onDragOver={(e) => handleDragOver(e, index)}
 										onDrop={(e) => handleDrop(e)}
 									>
 										<div
-											className={`group relative h-[32px] w-auto px-3 flex items-center justify-center rounded-md cursor-pointer select-none font-medium box-border
-                      ${
+											className={`group relative h-[32px] w-full sm:w-auto px-3 flex items-center justify-between sm:justify-center rounded-md cursor-pointer select-none font-medium box-border
+											${
 												activePageId === page.id
 													? "bg-[#FFFFFF] text-[#1A1A1A] border border-[#2F72E2] text-[14px]"
 													: "bg-[#9DA4B2] bg-opacity-15 text-[#677289] hover:bg-opacity-35 border border-transparent text-[14px]"
@@ -375,21 +404,23 @@ export default function PageNavigation({
 												)}
 
 												<span>{page.title}</span>
-
-												{/* Show dot-menu icon only when the page is selected */}
-												{activePageId === page.id && (
-													<img
-														src="/icons/dot-menu.svg"
-														alt="Menu"
-														className="w-4 h-4 ml-2 opacity-60"
-														onClick={(e) => {
-															e.stopPropagation();
-															handleContextMenu(e, page.id);
-														}}
-													/>
-												)}
 											</div>
+
+											{/* Show dot-menu icon only when the page is selected - moved outside of first div on mobile */}
+											{activePageId === page.id && (
+												<img
+													src="/icons/dot-menu.svg"
+													alt="Menu"
+													className="w-4 h-4 ml-2 opacity-60 sm:relative"
+													onClick={(e) => {
+														e.stopPropagation();
+														handleContextMenu(e, page.id);
+													}}
+												/>
+											)}
 										</div>
+
+										{/* Restore the plus button between pages */}
 										<div className="ml-[8px] flex items-center justify-center">
 											<button
 												className="opacity-0 hover:opacity-100 transition-opacity duration-200 w-4 h-4 flex items-center justify-center rounded-full text-gray-500"
@@ -408,7 +439,7 @@ export default function PageNavigation({
 
 										{dragOverItem === index && draggedItem !== index && (
 											<div
-												className="absolute h-[32px] w-1 bg-blue-500"
+												className="absolute h-[32px] w-[1px] bg-[#2F72E2]"
 												style={{
 													left:
 														dragOverItem > draggedItem!
@@ -422,7 +453,7 @@ export default function PageNavigation({
 								))}
 
 								<div
-									className="flex items-center"
+									className="flex items-center w-full sm:w-auto mt-4 sm:mt-0 relative"
 									onDragOver={(e) => {
 										e.preventDefault();
 										setDragOverItem(pages.length);
@@ -444,7 +475,7 @@ export default function PageNavigation({
 									}}
 								>
 									<button
-										className="h-[32px] px-3 flex items-center justify-center rounded-lg bg-[#FFFFFF] text-[#1A1A1A] hover:bg-[#9DA4B2] hover:bg-opacity-35 transition-colors font-medium gap-1 border border-[#E1E1E1] text-[14px]"
+										className="h-[32px] w-full sm:w-auto px-3 flex items-center justify-center rounded-lg bg-[#FFFFFF] text-[#1A1A1A] hover:bg-[#9DA4B2] hover:bg-opacity-35 transition-colors font-medium gap-1 border border-[#E1E1E1] text-[14px]"
 										onClick={() => handleAddPage(pages.length - 1)}
 									>
 										<img
@@ -462,7 +493,7 @@ export default function PageNavigation({
 
 									{dragOverItem === pages.length && (
 										<div
-											className="absolute h-[32px] w-1 bg-blue-500 left-0"
+											className="absolute h-[32px] w-[1px] bg-[#2F72E2] left-0"
 											style={{
 												left: "0",
 												transform: "translateX(-50%)",

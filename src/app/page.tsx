@@ -28,7 +28,7 @@ export default function Home() {
 			/>
 
 			<main className="flex-grow flex flex-col items-center justify-center p-4">
-				<div className="max-w-md w-full p-6 bg-white rounded-lg shadow-md">
+				<div className="max-w-md w-full p-6 bg-white shadow-md">
 					<h1 className="text-2xl font-bold text-center text-gray-800 mb-6">
 						{pageTitles[activePageId] || "Unknown Page"}
 					</h1>
