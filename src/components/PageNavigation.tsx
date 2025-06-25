@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { renderIcon } from "@/utils/renderIcon";
+import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 
 interface Page {
@@ -133,11 +134,13 @@ const ContextMenu = ({
 interface PageNavigationProps {
 	activePageId: string;
 	onPageSelect: (pageId: string) => void;
+	onPageUpdate?: (pages: Page[]) => void; // Notify parent of page changes
 }
 
 export default function PageNavigation({
 	activePageId,
 	onPageSelect,
+	onPageUpdate,
 }: PageNavigationProps) {
 	const [pages, setPages] = useState<Page[]>([
 		{ id: "1", title: "Info", icon: "/icons/circle-info.svg" },
@@ -154,6 +157,13 @@ export default function PageNavigation({
 
 	const [draggedItem, setDraggedItem] = useState<number | null>(null);
 	const [dragOverItem, setDragOverItem] = useState<number | null>(null);
+
+	// Helper function to notify parent component about page changes
+	const notifyPageUpdate = (newPages: Page[]) => {
+		if (onPageUpdate) {
+			onPageUpdate(newPages);
+		}
+	};
 
 	const handleDragStart = (e: React.DragEvent, position: number) => {
 		setDraggedItem(position);
@@ -176,6 +186,7 @@ export default function PageNavigation({
 		newPages.splice(dragOverItem, 0, draggedItemContent);
 
 		setPages(newPages);
+		notifyPageUpdate(newPages);
 		setDraggedItem(null);
 		setDragOverItem(null);
 	};
@@ -190,6 +201,7 @@ export default function PageNavigation({
 			const draggedItemContent = newPages.splice(draggedItem, 1)[0];
 			newPages.splice(dragOverItem, 0, draggedItemContent);
 			setPages(newPages);
+			notifyPageUpdate(newPages);
 		}
 
 		setDraggedItem(null);
@@ -220,12 +232,15 @@ export default function PageNavigation({
 		const newPages = [...pages];
 		newPages.splice(pageIndex + 1, 0, newPage);
 		setPages(newPages);
+		notifyPageUpdate(newPages);
 	};
 
 	const handleDelete = (page: Page) => {
 		if (pages.length <= 1) return;
 
-		setPages(pages.filter((p) => p.id !== page.id));
+		const newPages = pages.filter((p) => p.id !== page.id);
+		setPages(newPages);
+		notifyPageUpdate(newPages);
 
 		if (activePageId === page.id) {
 			const newActivePageId =
@@ -244,71 +259,15 @@ export default function PageNavigation({
 		const newPages = [...pages];
 		newPages.splice(index + 1, 0, newPage);
 		setPages(newPages);
+		notifyPageUpdate(newPages);
 
 		onPageSelect(newPage.id);
 	};
 
-	// Function to render the SVG icons inline
-	const renderIcon = (iconType: string, isActive: boolean) => {
-		const iconColor = isActive ? "#F59D0E" : "#8C93A1"; // Orange color when active
-
-		switch (iconType) {
-			case "/icons/circle-info.svg":
-				return (
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke={iconColor}
-						strokeWidth="1.5"
-						strokeLinecap="round"
-						strokeLinejoin="round"
-						className="w-5 h-5 mr-[6px]"
-					>
-						<circle cx="12" cy="12" r="10" />
-						<line x1="12" y1="16" x2="12" y2="12" />
-						<line x1="12" y1="8" x2="12.01" y2="8" />
-					</svg>
-				);
-			case "/icons/file-text.svg":
-				return (
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke={iconColor}
-						strokeWidth="1.5"
-						strokeLinecap="round"
-						strokeLinejoin="round"
-						className="w-5 h-5 mr-[6px]"
-					>
-						<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-						<polyline points="14 2 14 8 20 8" />
-						<line x1="16" y1="13" x2="8" y2="13" />
-						<line x1="16" y1="17" x2="8" y2="17" />
-						<polyline points="10 9 9 9 8 9" />
-					</svg>
-				);
-			case "/icons/circle-check.svg":
-				return (
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke={iconColor}
-						strokeWidth="1.5"
-						strokeLinecap="round"
-						strokeLinejoin="round"
-						className="w-5 h-5 mr-[6px]"
-					>
-						<circle cx="12" cy="12" r="10" />
-						<path d="M9 12l2 2 4-4" />
-					</svg>
-				);
-			default:
-				return null;
-		}
-	};
+	// Call notifyPageUpdate on initial render to set up initial page titles
+	useEffect(() => {
+		notifyPageUpdate(pages);
+	}, []);
 
 	return (
 		<div className="w-full bg-[#444444] p-[50px]">
@@ -373,33 +332,66 @@ export default function PageNavigation({
 
 										{dragOverItem === index && draggedItem !== index && (
 											<div
-												className="absolute h-[32px] w-1 bg-blue-500 left-0"
+												className="absolute h-[32px] w-1 bg-blue-500"
 												style={{
-													left: dragOverItem > draggedItem! ? "100%" : "0",
+													left:
+														dragOverItem > draggedItem!
+															? "calc(100% - 8px)"
+															: "0",
 													transform: "translateX(-50%)",
 												}}
 											/>
 										)}
-										{index === pages.length - 1 && (
-											<div className="ml-[3px]">
-												<button
-													className="px-3 py-1.5 rounded-md bg-[#FFFFFF] text-[#1A1A1A] hover:bg-[#9DA4B2] hover:bg-opacity-35 transition-colors text-[14px] font-medium flex items-center gap-1 border border-[#E1E1E1]"
-													onClick={() => handleAddPage(pages.length - 1)}
-												>
-													<img
-														src="/icons/add-icon.svg"
-														alt=""
-														className="w-4 h-4"
-														style={{
-															filter: "brightness(0) saturate(100%)",
-														}}
-													/>
-													<span>Add Page</span>
-												</button>
-											</div>
-										)}
 									</div>
 								))}
+
+								<div
+									className="ml-[3px]"
+									onDragOver={(e) => {
+										e.preventDefault();
+										setDragOverItem(pages.length);
+									}}
+									onDrop={(e) => {
+										e.preventDefault();
+										if (draggedItem !== null) {
+											const newPages = [...pages];
+											const draggedItemContent = newPages.splice(
+												draggedItem,
+												1
+											)[0];
+											newPages.splice(pages.length, 0, draggedItemContent);
+											setPages(newPages);
+											notifyPageUpdate(newPages);
+											setDraggedItem(null);
+											setDragOverItem(null);
+										}
+									}}
+								>
+									<button
+										className="px-3 py-1.5 rounded-md bg-[#FFFFFF] text-[#1A1A1A] hover:bg-[#9DA4B2] hover:bg-opacity-35 transition-colors text-[14px] font-medium flex items-center gap-1 border border-[#E1E1E1]"
+										onClick={() => handleAddPage(pages.length - 1)}
+									>
+										<img
+											src="/icons/add-icon.svg"
+											alt=""
+											className="w-4 h-4"
+											style={{
+												filter: "brightness(0) saturate(100%)",
+											}}
+										/>
+										<span>Add Page</span>
+									</button>
+
+									{dragOverItem === pages.length && (
+										<div
+											className="absolute h-[32px] w-1 bg-blue-500 left-0"
+											style={{
+												left: "0",
+												transform: "translateX(-50%)",
+											}}
+										/>
+									)}
+								</div>
 							</div>
 						</div>
 					</div>

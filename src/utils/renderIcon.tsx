@@ -1,5 +1,5 @@
 /**
- * Renders an SVG icon based on the icon type and active state
+ * Renders an SVG icon based on the icon type and active state (necessary for color changes).
  */
 export const renderIcon = (iconType: string, isActive: boolean) => {
 	const iconColor = isActive ? "#F59D0E" : "#8C93A1"; // Orange color when active
