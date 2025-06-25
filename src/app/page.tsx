@@ -28,7 +28,12 @@ export default function Home() {
 			/>
 
 			<main className="flex-grow flex flex-col items-center justify-center p-4">
-				<div className="max-w-md w-full p-6 bg-white shadow-md">
+				<div
+					className="max-w-md w-full p-6 bg-white shadow-md"
+					role="tabpanel"
+					id={`tabpanel-${activePageId}`}
+					aria-labelledby={`tab-${activePageId}`}
+				>
 					<h1 className="text-2xl font-bold text-center text-gray-800 mb-6">
 						{pageTitles[activePageId] || "Unknown Page"}
 					</h1>
@@ -36,7 +41,7 @@ export default function Home() {
 						This is a demonstration of the page navigation component. Try
 						dragging pages to reorder them, select and click on the menu for a
 						context menu, or hover between pages to add a new one. You can also
-						click the 'Add page' button to create a new page.
+						click the &apos;Add page&apos; button to create a new page.
 					</p>
 				</div>
 			</main>

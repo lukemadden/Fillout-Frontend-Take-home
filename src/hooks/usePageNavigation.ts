@@ -29,7 +29,8 @@ export function usePageNavigation(
 	// Initialize pages
 	useEffect(() => {
 		notifyPageUpdate(pages);
-	}, []);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []); // We want this to run only once on mount
 
 	const handleDragStart = useCallback(
 		(e: React.DragEvent, position: number) => {
