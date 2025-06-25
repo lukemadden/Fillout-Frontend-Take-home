@@ -331,7 +331,7 @@ export default function PageNavigation({
 											className={`group relative h-[32px] w-auto px-3 flex items-center justify-center rounded-md cursor-pointer select-none text-[14px] font-medium
                       ${
 												activePageId === page.id
-													? "bg-blue-50 text-[#1A1A1A] border border-[#2F72E2]"
+													? "bg-[#FFFFFF] text-[#1A1A1A] border border-[#2F72E2]"
 													: "bg-[#9DA4B2] bg-opacity-15 text-[#677289] hover:bg-opacity-35 border border-transparent"
 											} ${draggedItem === index ? "opacity-50" : ""}`}
 											onClick={() => onPageSelect(page.id)}
@@ -358,8 +358,7 @@ export default function PageNavigation({
 												)}
 											</div>
 										</div>
-
-										<div className="relative px-1 mx-1 ml-[8px] flex items-center justify-center">
+										<div className="relative mx-1 ml-[8px] flex items-center justify-center">
 											<button
 												className="opacity-0 hover:opacity-100 transition-opacity duration-200 w-4 h-4 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500"
 												onClick={() => handleAddPage(index)}
@@ -381,23 +380,27 @@ export default function PageNavigation({
 												}}
 											/>
 										)}
+										{index === pages.length - 1 && (
+											<div className="ml-[3px]">
+												<button
+													className="px-3 py-1.5 rounded-md bg-[#FFFFFF] text-[#1A1A1A] hover:bg-[#9DA4B2] hover:bg-opacity-35 transition-colors text-[14px] font-medium flex items-center gap-1 border border-[#E1E1E1]"
+													onClick={() => handleAddPage(pages.length - 1)}
+												>
+													<img
+														src="/icons/add-icon.svg"
+														alt=""
+														className="w-4 h-4"
+														style={{
+															filter: "brightness(0) saturate(100%)",
+														}}
+													/>
+													<span>Add Page</span>
+												</button>
+											</div>
+										)}
 									</div>
 								))}
 							</div>
-						</div>
-
-						<div className="ml-4">
-							<button
-								className="px-3 py-1.5 rounded-md bg-blue-50 text-[#F59D0E] hover:bg-blue-100 transition-colors text-[14px] font-medium flex items-center gap-1"
-								onClick={() => handleAddPage(pages.length - 1)}
-							>
-								<img
-									src="/icons/add-icon.svg"
-									alt=""
-									className="w-4 h-4 text-[#F59D0E]"
-								/>
-								Add Page
-							</button>
 						</div>
 					</div>
 				</div>
