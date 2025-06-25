@@ -13,7 +13,7 @@ export default function Home() {
 	});
 
 	return (
-		<div className="min-h-screen flex flex-col bg-gray-50">
+		<div className="min-h-screen flex flex-col bg-[#444444]">
 			<PageNavigation
 				activePageId={activePageId}
 				onPageSelect={setActivePageId}
@@ -23,7 +23,7 @@ export default function Home() {
 					pages.forEach((page) => {
 						newTitles[page.id] = page.title;
 					});
-					setPageTitles(newTitles as typeof pageTitles); // Ensure type compatibility
+					setPageTitles(newTitles);
 				}}
 			/>
 

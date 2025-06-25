@@ -270,7 +270,7 @@ export default function PageNavigation({
 	}, []);
 
 	return (
-		<div className="w-full bg-[#444444] p-[50px]">
+		<section className="w-full bg-[#444444] p-[50px]">
 			<div className="w-full bg-[#f9fafb] shadow-sm border-b border-gray-200 rounded-md">
 				<div className="max-w-7xl pl-[20px] pr-[20px] py-[20px]">
 					<div className="flex items-center">
@@ -409,6 +409,6 @@ export default function PageNavigation({
 					onClose={closeContextMenu}
 				/>
 			)}
-		</div>
+		</section>
 	);
 }
