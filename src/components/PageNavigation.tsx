@@ -44,55 +44,85 @@ const ContextMenu = ({
 				<div className="border-t border-gray-200 mb-1"></div>
 
 				<button
-					className="w-full text-left px-4 py-2 hover:bg-gray-100 text-[#1A1A1A]"
+					className="w-full text-left px-4 py-2 hover:bg-gray-100 text-[#1A1A1A] flex items-center text-[14px]"
 					onClick={() => {
 						// Set as first page functionality
 						onClose();
 					}}
 				>
-					Set as first page
+					<img
+						src="/icons/flag-2.svg"
+						alt=""
+						className="w-4 h-4 mr-2"
+						style={{ width: "16px", height: "16px" }}
+					/>
+					<span>Set as first page</span>
 				</button>
 
 				<button
-					className="w-full text-left px-4 py-2 hover:bg-gray-100 text-[#1A1A1A]"
+					className="w-full text-left px-4 py-2 hover:bg-gray-100 text-[#1A1A1A] flex items-center text-[14px]"
 					onClick={() => {
 						onRename(page);
 						onClose();
 					}}
 				>
-					Rename
+					<img
+						src="/icons/pencil-line.svg"
+						alt=""
+						className="w-4 h-4 mr-2"
+						style={{ width: "16px", height: "16px" }}
+					/>
+					<span>Rename</span>
 				</button>
 
 				<button
-					className="w-full text-left px-4 py-2 hover:bg-gray-100 text-[#1A1A1A]"
+					className="w-full text-left px-4 py-2 hover:bg-gray-100 text-[#1A1A1A] flex items-center text-[14px]"
 					onClick={() => {
 						// Copy functionality
 						onClose();
 					}}
 				>
-					Copy
+					<img
+						src="/icons/clipboard.svg"
+						alt=""
+						className="w-4 h-4 mr-2"
+						style={{ width: "16px", height: "16px" }}
+					/>
+					<span>Copy</span>
 				</button>
 
 				<button
-					className="w-full text-left px-4 py-2 hover:bg-gray-100 text-[#1A1A1A]"
+					className="w-full text-left px-4 py-2 hover:bg-gray-100 text-[#1A1A1A] flex items-center text-[14px]"
 					onClick={() => {
 						onDuplicate(page);
 						onClose();
 					}}
 				>
-					Duplicate
+					<img
+						src="/icons/square-behind-square.svg"
+						alt=""
+						className="w-4 h-4 mr-2"
+						style={{ width: "16px", height: "16px" }}
+					/>
+					<span>Duplicate</span>
 				</button>
 
 				<div className="my-1 border-t border-gray-200"></div>
 
 				<button
-					className="w-full text-left px-4 py-2 text-[#EF494F] hover:bg-gray-100"
+					className="w-full text-left px-4 py-2 text-[#EF494F] hover:bg-gray-100 flex items-center text-[14px]"
 					onClick={() => {
 						onDelete(page);
 						onClose();
 					}}
 				>
-					Delete
+					<img
+						src="/icons/trash-can.svg"
+						alt=""
+						className="w-4 h-4 mr-2"
+						style={{ width: "16px", height: "16px" }}
+					/>
+					<span>Delete</span>
 				</button>
 			</div>
 		</>,
