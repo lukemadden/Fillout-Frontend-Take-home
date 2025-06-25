@@ -33,7 +33,7 @@ const ContextMenu = ({
 		<>
 			<div className="fixed inset-0 z-40" onClick={onClose} />
 			<div
-				className="fixed z-50 bg-white rounded-md shadow-lg py-2 w-[240px] text-sm"
+				className="fixed z-50 bg-white rounded-lg shadow-lg py-2 w-[240px] text-sm"
 				style={{ left: `${x}px`, top: `${y}px` }}
 			>
 				<div className="px-4 py-1">
@@ -287,11 +287,11 @@ export default function PageNavigation({
 										onDrop={(e) => handleDrop(e)}
 									>
 										<div
-											className={`group relative h-[32px] w-auto px-3 flex items-center justify-center rounded-md cursor-pointer select-none text-[14px] font-medium
+											className={`group relative h-[32px] w-auto px-3 flex items-center justify-center rounded-md cursor-pointer select-none font-medium box-border
                       ${
 												activePageId === page.id
-													? "bg-[#FFFFFF] text-[#1A1A1A] border border-[#2F72E2]"
-													: "bg-[#9DA4B2] bg-opacity-15 text-[#677289] hover:bg-opacity-35 border border-transparent"
+													? "bg-[#FFFFFF] text-[#1A1A1A] border border-[#2F72E2] text-[14px]"
+													: "bg-[#9DA4B2] bg-opacity-15 text-[#677289] hover:bg-opacity-35 border border-transparent text-[14px]"
 											} ${draggedItem === index ? "opacity-50" : ""}`}
 											onClick={() => onPageSelect(page.id)}
 											onContextMenu={(e) => handleContextMenu(e, page.id)}
@@ -300,7 +300,80 @@ export default function PageNavigation({
 											onDragEnd={(e) => handleDragEnd(e)}
 										>
 											<div className="flex flex-row items-center">
-												{renderIcon(page.icon, activePageId === page.id)}
+												{/* Use direct SVG rendering for each icon type */}
+												{page.icon === "/icons/circle-info.svg" && (
+													<svg
+														xmlns="http://www.w3.org/2000/svg"
+														viewBox="0 0 24 24"
+														fill="none"
+														stroke={
+															activePageId === page.id ? "#F59D0E" : "#8C93A1"
+														}
+														strokeWidth="1.5"
+														strokeLinecap="round"
+														strokeLinejoin="round"
+														className="w-4 h-4 mr-[6px]"
+														style={{
+															position: "relative",
+															top: "-1px",
+															verticalAlign: "middle",
+														}}
+													>
+														<circle cx="12" cy="12" r="10" />
+														<line x1="12" y1="16" x2="12" y2="12" />
+														<line x1="12" y1="8" x2="12.01" y2="8" />
+													</svg>
+												)}
+
+												{page.icon === "/icons/file-text.svg" && (
+													<svg
+														xmlns="http://www.w3.org/2000/svg"
+														viewBox="0 0 24 24"
+														fill="none"
+														stroke={
+															activePageId === page.id ? "#F59D0E" : "#8C93A1"
+														}
+														strokeWidth="1.5"
+														strokeLinecap="round"
+														strokeLinejoin="round"
+														className="w-4 h-4 mr-[6px]"
+														style={{
+															position: "relative",
+															top: "-1px",
+															verticalAlign: "middle",
+														}}
+													>
+														<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+														<polyline points="14 2 14 8 20 8" />
+														<line x1="16" y1="13" x2="8" y2="13" />
+														<line x1="16" y1="17" x2="8" y2="17" />
+														<polyline points="10 9 9 9 8 9" />
+													</svg>
+												)}
+
+												{page.icon === "/icons/circle-check.svg" && (
+													<svg
+														xmlns="http://www.w3.org/2000/svg"
+														viewBox="0 0 24 24"
+														fill="none"
+														stroke={
+															activePageId === page.id ? "#F59D0E" : "#8C93A1"
+														}
+														strokeWidth="1.5"
+														strokeLinecap="round"
+														strokeLinejoin="round"
+														className="w-4 h-4 mr-[6px]"
+														style={{
+															position: "relative",
+															top: "-1px",
+															verticalAlign: "middle",
+														}}
+													>
+														<circle cx="12" cy="12" r="10" />
+														<path d="M9 12l2 2 4-4" />
+													</svg>
+												)}
+
 												<span>{page.title}</span>
 
 												{/* Show dot-menu icon only when the page is selected */}
@@ -319,7 +392,7 @@ export default function PageNavigation({
 										</div>
 										<div className="relative mx-1 ml-[8px] flex items-center justify-center">
 											<button
-												className="opacity-0 hover:opacity-100 transition-opacity duration-200 w-4 h-4 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500"
+												className="opacity-0 hover:opacity-100 transition-opacity duration-200 w-4 h-4 flex items-center justify-center rounded-full text-gray-500"
 												onClick={() => handleAddPage(index)}
 											>
 												<img
@@ -368,7 +441,7 @@ export default function PageNavigation({
 									}}
 								>
 									<button
-										className="px-3 py-1.5 rounded-md bg-[#FFFFFF] text-[#1A1A1A] hover:bg-[#9DA4B2] hover:bg-opacity-35 transition-colors text-[14px] font-medium flex items-center gap-1 border border-[#E1E1E1]"
+										className="h-[32px] px-3 flex items-center justify-center rounded-lg bg-[#FFFFFF] text-[#1A1A1A] hover:bg-[#9DA4B2] hover:bg-opacity-35 transition-colors font-medium gap-1 border border-[#E1E1E1] text-[14px]"
 										onClick={() => handleAddPage(pages.length - 1)}
 									>
 										<img
@@ -376,10 +449,12 @@ export default function PageNavigation({
 											alt=""
 											className="w-4 h-4"
 											style={{
-												filter: "brightness(0) saturate(100%)",
+												position: "relative",
+												top: "-1px",
+												verticalAlign: "middle",
 											}}
 										/>
-										<span>Add Page</span>
+										<span className="inline-block">Add Page</span>
 									</button>
 
 									{dragOverItem === pages.length && (
